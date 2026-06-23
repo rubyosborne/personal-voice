@@ -33,6 +33,23 @@ its corpus samples. This is how the voices "interact" — they share a spine.
 
 ---
 
+## Where this runs (portable skill)
+
+This skill is built to run in TWO places, with the SAME files bundled alongside
+this SKILL.md (SHARED.md + each voice's STYLE.md and corpus):
+
+- **Claude Code, in the real repo** — full local files + git. Both jobs work:
+  capture saves new samples and re-distills; you commit and push.
+- **A normal Claude chat (claude.ai web / Desktop app), as an uploaded skill** —
+  runs in an ephemeral sandbox over the bundled copies. You can READ everything
+  to draft, but you CANNOT save changes permanently.
+
+Resolve every path below relative to wherever this SKILL.md lives (the repo
+root in Claude Code; the skill's own folder when uploaded) — the data sits
+beside it in both cases.
+
+---
+
 ## Job 1 — CAPTURE ("add this to my <voice> writing")
 
 When Ruby gives you a sample to remember:
@@ -50,7 +67,12 @@ When Ruby gives you a sample to remember:
 4. **Promote shared traits.** If a trait shows up across multiple voices (a
    habitual word, a value, a thing she never does), add it to SHARED.md so all
    three voices inherit it. Keep SHARED.md small and high-signal.
-5. **Commit and push.**
+5. **Persist the change.**
+   - In Claude Code (real repo): commit and push.
+   - In a normal chat (uploaded skill): you CANNOT save automatically. Output the
+     updated STYLE.md (and any new sample) as text, and tell Ruby plainly that
+     the change won't stick until she updates the skill bundle at home and
+     re-uploads the ZIP. Never imply it was saved when it wasn't.
 6. Tell Ruby in one line what you learned/changed.
 
 ### What each STYLE.md should capture
