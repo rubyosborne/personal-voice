@@ -21,5 +21,31 @@ Open this repo in Claude Code, then just talk:
 - draft this formally, but a bit warmer like my informal voice
 - show my linkedin profile (to read/edit the rules)
 
+## Using it everywhere (phone, work laptop, normal Claude chats)
+The same skill runs as an **uploaded Agent Skill** in normal Claude chats
+(claude.ai web + Desktop app), not just in Claude Code — so I can use my voice on
+devices that can't clone this repo.
+
+- **Home (this device) is the source of truth.** Claude Code reads the live
+  files here, so it always uses the most recent voice. Capturing runs
+  `git pull --ff-only` first, then commits/pushes.
+- **The upload bundle** is `dist/voice.zip` (gitignored, regenerated). A
+  post-commit hook rebuilds it after every commit, so it's always current.
+  Build manually with `./scripts/build-skill-bundle.sh`; install the hook on a
+  new machine with `./scripts/install-hooks.sh`.
+- **To use it on another device:** in Claude → Settings → Customize → Skills →
+  Upload → pick `dist/voice.zip` (enable code execution under Capabilities).
+  Then just talk in any chat — "write this in my LinkedIn voice" — and Claude
+  loads the bundled voice and drafts.
+
+### Two limits to know
+- **No auto-sync.** Re-uploading the ZIP *is* the sync. After I capture new
+  writing at home, re-upload the freshly rebuilt `dist/voice.zip` on each device.
+- **Captures don't persist in normal chat.** That sandbox is ephemeral, so
+  "remember this" only sticks when done at home in Claude Code (real files +
+  git). In chat, Claude hands back the updated text to fold in at home.
+
 ## Privacy
-This repo is **private**. The corpus is never sent anywhere external.
+This repo is **private**. The corpus is never sent anywhere external. Uploading
+`dist/voice.zip` to your own Claude account keeps it within Claude, not on any
+third-party host — but it does leave this repo, so treat the upload as private.

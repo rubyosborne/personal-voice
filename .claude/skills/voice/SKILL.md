@@ -54,6 +54,8 @@ beside it in both cases.
 
 When Ruby gives you a sample to remember:
 
+0. **Get current first (Claude Code only).** Run `git pull --ff-only` so you're
+   distilling from the most recent corpus before you add to it.
 1. **Identify the voice.** If she named one (linkedin / informal / formal), use
    it. If not, ask which of the three — never guess.
 2. **Save the raw sample.** Write it verbatim to
@@ -68,7 +70,10 @@ When Ruby gives you a sample to remember:
    habitual word, a value, a thing she never does), add it to SHARED.md so all
    three voices inherit it. Keep SHARED.md small and high-signal.
 5. **Persist the change.**
-   - In Claude Code (real repo): commit and push.
+   - In Claude Code (real repo): commit and push. The post-commit hook rebuilds
+     dist/voice.zip automatically; if it's not installed, run
+     `./scripts/build-skill-bundle.sh` so the upload bundle reflects the new
+     sample. Then tell Ruby the fresh ZIP is at dist/voice.zip to re-upload.
    - In a normal chat (uploaded skill): you CANNOT save automatically. Output the
      updated STYLE.md (and any new sample) as text, and tell Ruby plainly that
      the change won't stick until she updates the skill bundle at home and
