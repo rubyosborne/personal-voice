@@ -12,7 +12,7 @@ set -euo pipefail
 
 LABEL="com.ruby.voice-ingest"
 PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
-REPO="/Users/rubyosborne/Documents/Claude/Projects/personal-voice"
+REPO="/Users/rubyosborne/ClaudeDisk/personal-voice"
 RUNNER="$REPO/scripts/ingest-run.sh"
 DOMAIN="gui/$(id -u)"
 

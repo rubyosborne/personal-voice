@@ -5,7 +5,7 @@
 
 set -euo pipefail
 
-REPO="/Users/rubyosborne/Documents/Claude/Projects/personal-voice"
+REPO="/Users/rubyosborne/ClaudeDisk/personal-voice"
 cd "$REPO"
 
 # Log everything (outside the repo, so it never dirties git).
