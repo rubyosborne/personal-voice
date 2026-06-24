@@ -110,6 +110,54 @@ without flagging the conflict.
 
 ---
 
+## Job 4 — INGEST INBOX ("process my voice inbox") — home / Claude Code only
+
+Samples captured from other devices arrive in `inbox/` (via the MCP connector,
+or dropped by hand). This job drains that queue. It is **Job 1 (CAPTURE) applied
+in batch** — reuse Job 1's logic exactly (same corpus header, same re-distill,
+same SHARED.md promotion). Do NOT invent different rules here.
+
+Trigger: Ruby says "process my voice inbox", or `scripts/ingest-run.sh` invokes
+it on a schedule.
+
+1. **Get current.** The wrapper script runs `git pull --ff-only` first; if you're
+   running by hand, do it yourself.
+2. **List the queue.** Find every `inbox/*.md` EXCEPT `inbox/.gitkeep` and
+   `inbox/README.md`. If none: say "inbox empty — nothing to ingest" and STOP.
+   Do NOT commit.
+3. **Process each file**, oldest filename first (names sort by timestamp):
+   a. Parse the YAML frontmatter: `voice` (required), `source`, `received`,
+      `slug`, `desc`. If `voice` is missing or not one of linkedin/informal/
+      formal: **SKIP** the file, leave it in place, note it — never guess.
+   b. The body after the closing `---` is the verbatim sample. Never edit it.
+   c. **Date** = the date portion of `received` if present, else today, as
+      `YYYY-MM-DD`.
+   d. **Slug** = frontmatter `slug` if present; else derive a short kebab-case
+      slug from `desc` or the first line of the body.
+   e. **NNNN** = next zero-padded 4-digit number in `<voice>/corpus/`.
+   f. Write `<voice>/corpus/NNNN-<slug>.md` — the standard Job 1 header then a
+      blank line then the verbatim body:
+        `# <YYYY-MM-DD> — <Voice> post. <desc or a derived one-liner>.`
+      Match the existing corpus header style exactly (see
+      `linkedin/corpus/0001-*.md`).
+   g. **Re-distill** that voice's STYLE.md (Job 1 step 3) — evidence-backed,
+      quote real fragments.
+   h. **Promote** any genuinely cross-voice trait to SHARED.md (Job 1 step 4).
+      Keep SHARED.md small.
+   i. **Delete** the inbox file you just ingested.
+4. **Commit once** for the whole batch and push:
+   `git add -A && git commit -m "Ingest N inbox sample(s): <voices> + re-distill" && git push`
+   The post-commit hook rebuilds `dist/voice.zip`. If the hook isn't installed,
+   run `./scripts/build-skill-bundle.sh`.
+5. **Summarize** in 1–2 lines: which voices got samples, the new corpus
+   filenames, and anything skipped (skipped files stay in `inbox/` for next run).
+
+Idempotency: each ingested file is deleted in the same commit that adds its
+corpus entry, so a clean inbox is always a no-op and a crash mid-batch just
+leaves un-processed files for next time.
+
+---
+
 ## Principles
 - The corpus is private. Never paste samples into anything external.
 - Real examples beat assumptions. When unsure how she'd phrase something, read
