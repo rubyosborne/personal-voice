@@ -41,9 +41,31 @@ devices that can't clone this repo.
 ### Two limits to know
 - **No auto-sync.** Re-uploading the ZIP *is* the sync. After I capture new
   writing at home, re-upload the freshly rebuilt `dist/voice.zip` on each device.
-- **Captures don't persist in normal chat.** That sandbox is ephemeral, so
-  "remember this" only sticks when done at home in Claude Code (real files +
-  git). In chat, Claude hands back the updated text to fold in at home.
+- **Captures in normal chat don't persist on their own** (the sandbox is
+  ephemeral) — which is exactly what the capture pipeline below fixes.
+
+## Capturing from any device (the inbox pipeline)
+So the voice can *learn* from writing done on a locked-down device (no git,
+GitHub, iCloud), capture flows through a queue instead of needing local files:
+
+1. **Capture** — talk to Claude on any device with the **voice-inbox MCP
+   connector** enabled: "save this to my linkedin voice: …". The connector writes
+   the raw sample into `inbox/` in this repo (via the GitHub API). It can also be
+   tested by hand-dropping a file in `inbox/` (format in `inbox/README.md`).
+2. **Queue** — the GitHub repo *is* the queue. Samples wait in `inbox/` until
+   home ingests them; nothing is lost if the Mac is off.
+3. **Learn** — on the home Mac, a weekly **launchd** job (Mondays 17:00; runs on
+   next wake if asleep) calls `scripts/ingest-run.sh`, which runs the skill's
+   **Job 4 — INGEST INBOX** via headless `claude -p`: each queued sample is saved
+   to the right `<voice>/corpus/`, the `STYLE.md` is re-distilled, the inbox file
+   is deleted, and it all commits/pushes (the hook rebuilds `dist/voice.zip`).
+   Trigger it any time without waiting by saying **"process my voice inbox"** in
+   Claude Code, or `launchctl kickstart -k gui/$(id -u)/com.ruby.voice-ingest`.
+
+Setup: `./scripts/install-schedule.sh` (weekly job; `--remove` to undo). The
+connector itself lives in a separate repo (`voice-mcp-server`, a Cloudflare
+Worker). Cadence latency: a sample captured mid-week is learned at the next
+Monday run. Idle weeks cost nothing — an empty inbox exits before calling Claude.
 
 ## Privacy
 This repo is **private**. The corpus is never sent anywhere external. Uploading
